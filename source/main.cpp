@@ -7,12 +7,12 @@
 const int iScreenWidth = 672;
 const int iScreenHeight = 780;
 const int alienRows = 3;
-const int alienColumns = 4;
+const int alienColumns = 9;
 const int totalAliens = alienColumns * alienRows;
 const float playerWidth = 64.0f;
 const float playerHeight = 32.0f;
-const int alienStartX = 50;
-const int alienStartY = 600;
+int alienStartX = 50;
+int alienStartY = 600;
 const float alienPadding = 5.0f;
 
 //Initialize game state functions
@@ -87,7 +87,6 @@ struct AlienShip{
 	float height = playerHeight;
 	float x;
 	float y;
-	DIR direction = RIGHT;
 	void SetSize(float a_width, float a_height){
 		width = a_width;
 		height = a_height;
@@ -98,27 +97,12 @@ struct AlienShip{
 		y = a_y;
 	}
 
-	unsigned int moveLeftKey;
-	unsigned int moveRightKey;
-	void SetMovementKeys(unsigned int a_moveLeft, unsigned int a_moveRight){
-		moveLeftKey = a_moveLeft;
-		moveRightKey = a_moveRight;
-	}
-
-	bool Move(){
-		if (direction == LEFT){
-			if (x < width * 0.5f){
-				return false;
-			}
+	void move(float a_timeStep){
+		if (x < iScreenWidth){
+			alienStartX += 50;
+			MoveSprite(spriteID, x, y);
 		}
-		if (direction == RIGHT){
-			if (x > iScreenWidth - (width * .5f)){
-				return false;
-			}
-		}
-		return true;
 	}
-
 };
 
 PlayerCannon player;
@@ -162,7 +146,6 @@ int main(int argc, char* argv[])
 	player.SetMovementKeys('A', 'D');
 	player.SetMovementExtremes(0, iScreenWidth);
 
-	aliens[1].SetMovementKeys('A', 'D');
 	//Initialize font
 	AddFont(invadersFont);
 
@@ -205,7 +188,6 @@ int main(int argc, char* argv[])
 			break;
 
 		case GAMEPLAY:
-			DrawEnemies();
 			UpdateGameState(deltaT);
 
 			if (IsKeyDown(256)){
@@ -238,6 +220,8 @@ void UpdateGameState(float a_deltaTime){
 	player.SetMovementExtremes(0, iScreenWidth);
 	player.Move(a_deltaTime, player.speed);
 	DrawSprite(player.spriteID);
+	aliens[1].move(a_deltaTime);
+	DrawEnemies();
 
 }
 
@@ -250,7 +234,7 @@ void CreateEnemies(){
 }
 
 void DrawEnemies(){
-	int xPos;
+	int xPos = 0;
 	int yPos = alienStartY;
 	int i = 0;
 
