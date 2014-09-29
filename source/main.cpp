@@ -9,7 +9,7 @@
 const int TOTAL_ALIENS = 18;
 const float PLAYER_WIDTH = 64.0f;
 const float PLAYER_HEIGHT = 32.0f;
-float enemySpeed = 50.f;
+float enemySpeed = 60.f;
 
 //Initialize game state functions
 void UpdateMainMenu();
