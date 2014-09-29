@@ -1,16 +1,15 @@
 ﻿#include "AIE.h"
 #include "Player.h"
+#include "Enemy.h"
 #include <iostream>
 
 //Keyboard Enums broken, search and use GLFW keyboard keys
 
 //Window variables
-const int SCREEN_WIDTH = 672;
-const int SCREEN_HEIGHT = 780;
 const int TOTAL_ALIENS = 18;
 const float PLAYER_WIDTH = 64.0f;
 const float PLAYER_HEIGHT = 32.0f;
-const float alienPadding = 5.0f;
+float enemySpeed = 50.f;
 
 //Initialize game state functions
 void UpdateMainMenu();
@@ -26,53 +25,55 @@ enum  DIR
 	RIGHT,
 	DOWN,
 };
+
 DIR direction = LEFT;
-struct AlienShip{
-	unsigned int spriteID;
-	float speed = 80.f;
-	float width = PLAYER_WIDTH;
-	float height = PLAYER_HEIGHT;
-	float x;
-	float y;
-	
 
-	void SetSize(float a_width, float a_height){
-		width = a_width;
-		height = a_height;
-	}
-
-	void SetPosition(float a_x, float a_y){
-		x = a_x;
-		y = a_y;
-	}
-
-	bool Collide(int a_Direction)
-	{
-		if (a_Direction == LEFT)
-		{
-			if (x < width * .5f)
-			{
-				x = width * .5f;
-				return true;
-			}
-		}
-		if (a_Direction == RIGHT)
-		{
-			if (x > SCREEN_WIDTH - (width * .5f))
-			{
-				x = SCREEN_WIDTH - (width * .5f);
-				return true;
-			}
-		}
-		return false;
-	}
-};
+//struct AlienShip{
+//	unsigned int spriteID;
+//	float speed = 80.f;
+//	float width = PLAYER_WIDTH;
+//	float height = PLAYER_HEIGHT;
+//	float x;
+//	float y;
+//	
+//
+//	void SetSize(float a_width, float a_height){
+//		width = a_width;
+//		height = a_height;
+//	}
+//
+//	void SetPosition(float a_x, float a_y){
+//		x = a_x;
+//		y = a_y;
+//	}
+//
+//	bool Collide(int a_Direction){
+//		if (a_Direction == LEFT)
+//		{
+//			if (x < width * .5f)
+//			{
+//				x = width * .5f;
+//				return true;
+//			}
+//		}
+//		if (a_Direction == RIGHT)
+//		{
+//			if (x > SCREEN_WIDTH - (width * .5f))
+//			{
+//				x = SCREEN_WIDTH - (width * .5f);
+//				return true;
+//			}
+//		}
+//		return false;
+//	}
+//};
 
 Player player1;
-AlienShip aliens[TOTAL_ALIENS];
+Enemy aliens[TOTAL_ALIENS];
 
 //Player global veriables
 unsigned int arcadeMarquee;
+
 //unsigned int alienShips[18];
 unsigned int playerLives1;
 unsigned int playerLives2;
@@ -194,10 +195,11 @@ void DrawEnemies(){
 
 	for (int i = 0; i < TOTAL_ALIENS; i++){
 		aliens[i].SetSize(player1.GetWidth(), player1.GetHeight());
-		aliens[i].spriteID = CreateSprite("./images/invaders/invaders_1_00.png", player1.GetWidth(), player1.GetHeight(), true);
-		MoveSprite(aliens[i].spriteID, enemyX, enemyY);
-		aliens[i].x = enemyX;
-		aliens[i].y = enemyY;
+		aliens[i].SetSpriteID(CreateSprite("./images/invaders/invaders_1_00.png", player1.GetWidth(), player1.GetHeight(), true));
+		MoveSprite(aliens[i].GetSpriteID(), enemyX, enemyY);
+		aliens[i].SetX(enemyX);
+		aliens[i].SetY(enemyY);
+		aliens[i].SetSpeed(enemySpeed);
 		enemyX += .12*SCREEN_WIDTH;
 		if (enemyX > SCREEN_WIDTH * .8f){
 			enemyX = SCREEN_WIDTH * .2f;
@@ -224,23 +226,23 @@ void MoveEnemies(float a_deltaTime){
 	case 0:
 		for (int i = 0; i < TOTAL_ALIENS; i++)
 		{
-			aliens[i].x -= a_deltaTime * aliens[i].speed;
+			aliens[i].SetX(aliens[i].GetX() - a_deltaTime * aliens[i].GetSpeed());
 			if (down){
-				aliens[i].y -= aliens[i].height;
+				aliens[i].SetY(aliens[i].GetY() - aliens[i].GetHeight());
 			}
-			MoveSprite(aliens[i].spriteID, aliens[i].x, aliens[i].y);
-			DrawSprite(aliens[i].spriteID);
+			MoveSprite(aliens[i].GetSpriteID(), aliens[i].GetX(), aliens[i].GetY());
+			DrawSprite(aliens[i].GetSpriteID());
 		}
 		break;
 	case 1:
 		for (int i = 0; i < TOTAL_ALIENS; i++)
 		{
-			aliens[i].x += a_deltaTime * aliens[i].speed;
+			aliens[i].SetX(aliens[i].GetX() + a_deltaTime * aliens[i].GetSpeed());
 			if (down){
-				aliens[i].y -= aliens[i].height;
+				aliens[i].SetY(aliens[i].GetY() - aliens[i].GetHeight());
 			}
-			MoveSprite(aliens[i].spriteID, aliens[i].x, aliens[i].y);
-			DrawSprite(aliens[i].spriteID);
+			MoveSprite(aliens[i].GetSpriteID(), aliens[i].GetX(), aliens[i].GetY());
+			DrawSprite(aliens[i].GetSpriteID());
 		}
 		break;
 
