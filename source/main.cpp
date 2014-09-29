@@ -6,13 +6,11 @@
 //Window variables
 const int iScreenWidth = 672;
 const int iScreenHeight = 780;
-const int alienRows = 3;
-const int alienColumns = 9;
+const int alienRows = 2;
+const int alienColumns = 2;
 const int totalAliens = alienColumns * alienRows;
 const float playerWidth = 64.0f;
 const float playerHeight = 32.0f;
-int alienStartX = 50;
-int alienStartY = 600;
 const float alienPadding = 5.0f;
 
 //Initialize game state functions
@@ -79,7 +77,7 @@ enum  DIR
 	RIGHT,
 	DOWN,
 };
-
+DIR direction = LEFT;
 struct AlienShip{
 	unsigned int spriteID;
 	float speed = 50.f;
@@ -87,6 +85,8 @@ struct AlienShip{
 	float height = playerHeight;
 	float x;
 	float y;
+	
+
 	void SetSize(float a_width, float a_height){
 		width = a_width;
 		height = a_height;
@@ -97,11 +97,25 @@ struct AlienShip{
 		y = a_y;
 	}
 
-	void move(float a_timeStep){
-		if (x < iScreenWidth){
-			alienStartX += 50;
-			MoveSprite(spriteID, x, y);
+	bool Move(int a_Direction)
+	{
+		if (a_Direction == LEFT)
+		{
+			if (x < width * .5f)
+			{
+				x = width * .5f;
+				return false;
+			}
 		}
+		if (a_Direction == RIGHT)
+		{
+			if (x > iScreenWidth - (width * .5f))
+			{
+				x = iScreenWidth - (width * .5f);
+				return false;
+			}
+		}
+		return true;
 	}
 };
 
@@ -160,9 +174,6 @@ int main(int argc, char* argv[])
 	MoveSprite(playerLives2, iScreenWidth * 0.15f, iScreenHeight - 715);
 	MoveSprite(arcadeMarquee, iScreenWidth * 0.5f, iScreenHeight * 0.5f);
 
-	//Initialize alien sprites
-
-	CreateEnemies();
 	DrawEnemies();
 
 	do{
@@ -216,39 +227,77 @@ void UpdateMainMenu(){
 }
 
 void UpdateGameState(float a_deltaTime){
-	DrawUI();
-	player.SetMovementExtremes(0, iScreenWidth);
+
 	player.Move(a_deltaTime, player.speed);
 	DrawSprite(player.spriteID);
-	aliens[1].move(a_deltaTime);
-	DrawEnemies();
+	DrawUI();
 
-}
-
-void CreateEnemies(){
-	//Initialize alien ships
+	//int dir = 0;
+	bool down = false;
 	for (int i = 0; i < totalAliens; i++){
-		aliens[i].spriteID = CreateSprite("./images/invaders/invaders_1_00.png", aliens[i].width, aliens[i].height, true);
+		//dir = aliens[i].direction;
+		if (!aliens[i].Move(direction)){
+			down = true;
+			if (direction == 0)
+				direction = RIGHT;
+			else
+				direction = LEFT;
+		}
+	}
+	/*if (down){
+		for (int i = 0; i < totalAliens; i++){
+
+		}
+	}*/
+	switch (direction){
+
+	case 0:
+		for (int i = 0; i < totalAliens; i++)
+		{
+			aliens[i].x -= a_deltaTime * aliens[i].speed;
+			if (down){
+				aliens[i].y -= aliens[i].height;
+				//aliens[i].x += a_deltaTime * aliens[i].speed * 2;
+			}
+			MoveSprite(aliens[i].spriteID, aliens[i].x, aliens[i].y);
+			DrawSprite(aliens[i].spriteID);
+		}
+		break;
+	case 1:
+		for (int i = 0; i < totalAliens; i++)
+		{
+			aliens[i].x += a_deltaTime * aliens[i].speed;
+			if (down){
+				aliens[i].y -= aliens[i].height;
+				//aliens[i].x -= a_deltaTime * aliens[i].speed * 2;
+			}
+			MoveSprite(aliens[i].spriteID, aliens[i].x, aliens[i].y);
+			DrawSprite(aliens[i].spriteID);
+		}
+		break;
+
+	default:
+		break;
 	}
 
 }
 
 void DrawEnemies(){
-	int xPos = 0;
-	int yPos = alienStartY;
-	int i = 0;
 
-	for (int row = 0; row < alienRows; row++){
-		xPos = alienStartX;
-		for (int col = 0; col < alienColumns; col++, i++){
-			aliens[i].SetPosition(xPos, yPos);
-			MoveSprite(aliens[i].spriteID, aliens[i].x, aliens[i].y);
-			DrawSprite(aliens[i].spriteID);
-			xPos += aliens[i].width + alienPadding;
+	float enemyX = iScreenWidth * .2f;
+	float enemyY = iScreenHeight * .7f;
 
-			std::cout << aliens[i].x << " " << aliens[i].y << std::endl;
+	for (int i = 0; i < 10; i++){
+		aliens[i].SetSize(player.width, player.height);
+		aliens[i].spriteID = CreateSprite("./images/invaders/invaders_1_00.png", player.width, player.height, true);
+		MoveSprite(aliens[i].spriteID, enemyX, enemyY);
+		aliens[i].x = enemyX;
+		aliens[i].y = enemyY;
+		enemyX += .12*iScreenWidth;
+		if (enemyX > iScreenWidth * .8f){
+			enemyX = iScreenWidth * .2f;
+			enemyY -= .08f * iScreenHeight;
 		}
-		yPos -= playerHeight + alienPadding;
 	}
 }
 
