@@ -18,6 +18,7 @@ void DrawUI();
 void UpdateGameState(float a_deltaTime);
 void CreateEnemies();
 void DrawEnemies();
+void MoveEnemies(float a_deltaTime);
 
 enum  DIR
 {
@@ -45,14 +46,14 @@ struct AlienShip{
 		y = a_y;
 	}
 
-	bool Move(int a_Direction)
+	bool Collide(int a_Direction)
 	{
 		if (a_Direction == LEFT)
 		{
 			if (x < width * .5f)
 			{
 				x = width * .5f;
-				return false;
+				return true;
 			}
 		}
 		if (a_Direction == RIGHT)
@@ -60,10 +61,10 @@ struct AlienShip{
 			if (x > SCREEN_WIDTH - (width * .5f))
 			{
 				x = SCREEN_WIDTH - (width * .5f);
-				return false;
+				return true;
 			}
 		}
-		return true;
+		return false;
 	}
 };
 
@@ -179,10 +180,37 @@ void UpdateGameState(float a_deltaTime){
 	player1.Move(a_deltaTime, player1.GetSpeed());
 	DrawSprite(player1.GetSpriteID());
 	DrawUI();
+	MoveEnemies(a_deltaTime);
+
+
+	
+
+}
+
+void DrawEnemies(){
+
+	float enemyX = SCREEN_WIDTH * .2f;
+	float enemyY = SCREEN_HEIGHT * .7f;
+
+	for (int i = 0; i < TOTAL_ALIENS; i++){
+		aliens[i].SetSize(player1.GetWidth(), player1.GetHeight());
+		aliens[i].spriteID = CreateSprite("./images/invaders/invaders_1_00.png", player1.GetWidth(), player1.GetHeight(), true);
+		MoveSprite(aliens[i].spriteID, enemyX, enemyY);
+		aliens[i].x = enemyX;
+		aliens[i].y = enemyY;
+		enemyX += .12*SCREEN_WIDTH;
+		if (enemyX > SCREEN_WIDTH * .8f){
+			enemyX = SCREEN_WIDTH * .2f;
+			enemyY -= .08f * SCREEN_HEIGHT;
+		}
+	}
+}
+
+void MoveEnemies(float a_deltaTime){
 
 	bool down = false;
 	for (int i = 0; i < TOTAL_ALIENS; i++){
-		if (!aliens[i].Move(direction)){
+		if (aliens[i].Collide(direction)){
 			down = true;
 			if (direction == 0)
 				direction = RIGHT;
@@ -218,26 +246,6 @@ void UpdateGameState(float a_deltaTime){
 
 	default:
 		break;
-	}
-
-}
-
-void DrawEnemies(){
-
-	float enemyX = SCREEN_WIDTH * .2f;
-	float enemyY = SCREEN_HEIGHT * .7f;
-
-	for (int i = 0; i < TOTAL_ALIENS; i++){
-		aliens[i].SetSize(player1.GetWidth(), player1.GetHeight());
-		aliens[i].spriteID = CreateSprite("./images/invaders/invaders_1_00.png", player1.GetWidth(), player1.GetHeight(), true);
-		MoveSprite(aliens[i].spriteID, enemyX, enemyY);
-		aliens[i].x = enemyX;
-		aliens[i].y = enemyY;
-		enemyX += .12*SCREEN_WIDTH;
-		if (enemyX > SCREEN_WIDTH * .8f){
-			enemyX = SCREEN_WIDTH * .2f;
-			enemyY -= .08f * SCREEN_HEIGHT;
-		}
 	}
 }
 
