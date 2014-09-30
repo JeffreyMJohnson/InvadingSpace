@@ -3,6 +3,7 @@
 #ifndef _ENEMY_H_
 #define _ENEMY_H_
 #include "Window.h"
+#include "AIE.h"
 
 class Enemy
 {
@@ -30,13 +31,8 @@ public:
 	void SetSpeed(float speed);
 	float GetSpeed();
 
-	enum DIR{
-		LEFT,
-		RIGHT,
-		DOWN,
-	};
-
-	DIR direction = LEFT;
+	void Move(float a_deltaTime, int a_direction, float a_speed);
+	void Draw();
 
 	Enemy();
 	~Enemy();

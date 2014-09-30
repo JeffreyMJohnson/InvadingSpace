@@ -9,27 +9,20 @@
 const int TOTAL_ALIENS = 18;
 const float PLAYER_WIDTH = 64.0f;
 const float PLAYER_HEIGHT = 32.0f;
-float enemySpeed = 60.f;
+float enemySpeed = 100.f;
 
 //Initialize game state functions
 void UpdateMainMenu();
 void DrawUI();
 void UpdateGameState(float a_deltaTime);
 void CreateEnemies();
+void EnemiesLoad();
+void MoveEnemies(int a_direction, float a_deltaTime, float a_speed);
 void DrawEnemies();
-void MoveEnemies(float a_deltaTime);
-
-enum  DIR
-{
-	LEFT,
-	RIGHT,
-	DOWN,
-};
-
-DIR direction = LEFT;
 
 Player player1;
 Enemy aliens[TOTAL_ALIENS];
+int enemiesDirection = 1;
 
 //Player global veriables
 unsigned int arcadeMarquee;
@@ -84,7 +77,7 @@ int main(int argc, char* argv[])
 	MoveSprite(playerLives2, SCREEN_WIDTH * 0.15f, SCREEN_HEIGHT - 715);
 	MoveSprite(arcadeMarquee, SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f);
 
-	DrawEnemies();
+	EnemiesLoad();
 
 	do{
 
@@ -141,75 +134,78 @@ void UpdateGameState(float a_deltaTime){
 	player1.Move(a_deltaTime, player1.GetSpeed());
 	DrawSprite(player1.GetSpriteID());
 	DrawUI();
-	MoveEnemies(a_deltaTime);
 
 
-	
+	bool down = false;
+
+	for (int i = 0; i < TOTAL_ALIENS; i++){
+		//Collision Right
+		if (aliens[i].GetX() > SCREEN_WIDTH * .9f){
+			aliens[i].SetX(SCREEN_WIDTH * 0.9f);
+			enemiesDirection = -1;
+			down = true;
+			break;
+		}
+		//Collision Left
+		else if (aliens[i].GetX() < SCREEN_WIDTH * .1f){
+			aliens[i].SetX(SCREEN_WIDTH * 0.1f);
+			enemiesDirection = 1;
+			down = true;
+			break;
+		}
+	}
+
+	if (down){
+		for (int i = 0; i < TOTAL_ALIENS; i++){
+			aliens[i].SetY(aliens[i].GetY() - .05f * SCREEN_HEIGHT);
+		}
+	}
+
+	MoveEnemies(enemiesDirection, a_deltaTime, enemySpeed);
+	DrawEnemies();
+
 
 }
 
-void DrawEnemies(){
+void EnemiesLoad(){
 
+	//Initial position
 	float enemyX = SCREEN_WIDTH * .2f;
 	float enemyY = SCREEN_HEIGHT * .7f;
 
 	for (int i = 0; i < TOTAL_ALIENS; i++){
+
+		//Initialize Sprite
 		aliens[i].SetSize(player1.GetWidth(), player1.GetHeight());
 		aliens[i].SetSpriteID(CreateSprite("./images/invaders/invaders_1_00.png", player1.GetWidth(), player1.GetHeight(), true));
-		MoveSprite(aliens[i].GetSpriteID(), enemyX, enemyY);
-		aliens[i].SetX(enemyX);
-		aliens[i].SetY(enemyY);
-		aliens[i].SetSpeed(enemySpeed);
-		enemyX += .12*SCREEN_WIDTH;
+
 		if (enemyX > SCREEN_WIDTH * .8f){
 			enemyX = SCREEN_WIDTH * .2f;
 			enemyY -= .08f * SCREEN_HEIGHT;
 		}
+
+		//initialize position
+		aliens[i].SetPosition(enemyX, enemyY);
+
+		//Increment position
+		enemyX += .12*SCREEN_WIDTH;
 	}
 }
 
-void MoveEnemies(float a_deltaTime){
+void MoveEnemies(int a_direction, float a_deltaTime, float a_speed){
 
-	bool down = false;
 	for (int i = 0; i < TOTAL_ALIENS; i++){
-		if (aliens[i].Collide(direction)){
-			down = true;
-			if (direction == 0)
-				direction = RIGHT;
-			else
-				direction = LEFT;
-		}
-	}
-
-	switch (direction){
-
-	case 0:
-		for (int i = 0; i < TOTAL_ALIENS; i++)
-		{
-			aliens[i].SetX(aliens[i].GetX() - a_deltaTime * aliens[i].GetSpeed());
-			if (down){
-				aliens[i].SetY(aliens[i].GetY() - aliens[i].GetHeight());
-			}
-			MoveSprite(aliens[i].GetSpriteID(), aliens[i].GetX(), aliens[i].GetY());
-			DrawSprite(aliens[i].GetSpriteID());
-		}
-		break;
-	case 1:
-		for (int i = 0; i < TOTAL_ALIENS; i++)
-		{
-			aliens[i].SetX(aliens[i].GetX() + a_deltaTime * aliens[i].GetSpeed());
-			if (down){
-				aliens[i].SetY(aliens[i].GetY() - aliens[i].GetHeight());
-			}
-			MoveSprite(aliens[i].GetSpriteID(), aliens[i].GetX(), aliens[i].GetY());
-			DrawSprite(aliens[i].GetSpriteID());
-		}
-		break;
-
-	default:
-		break;
+		aliens[i].Move(a_deltaTime, a_direction, a_speed);
 	}
 }
+
+void DrawEnemies(){
+	for (int i = 0; i < TOTAL_ALIENS; i++){
+		aliens[i].Draw();
+	}
+}
+
+
 
 void DrawUI(){
 	//Draw UI elements

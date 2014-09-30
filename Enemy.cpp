@@ -63,24 +63,13 @@ void Enemy::SetPosition(float a_x, float a_y){
 	y = a_y;
 }
 
-bool Enemy::Collide(int a_Direction){
-	if (a_Direction == LEFT)
-	{
-		if (x < width * .5f)
-		{
-			x = width * .5f;
-			return true;
-		}
-	}
-	if (a_Direction == RIGHT)
-	{
-		if (x > SCREEN_WIDTH - (width * .5f))
-		{
-			x = SCREEN_WIDTH - (width * .5f);
-			return true;
-		}
-	}
-	return false;
+void Enemy::Move(float a_deltaTime, int a_direction, float a_speed){
+	x += a_speed * a_direction * a_deltaTime;
+}
+
+void Enemy::Draw(){
+	MoveSprite(spriteID, x, y);
+	DrawSprite(spriteID);
 }
 
 Enemy::~Enemy()
