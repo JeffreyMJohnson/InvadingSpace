@@ -3,6 +3,7 @@
 
 Enemy::Enemy()
 {
+	isActive = true;
 }
 
 void Enemy::SetSpriteID(unsigned int a_spriteID){

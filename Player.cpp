@@ -4,11 +4,15 @@
 
 Player::Player()
 {
+
+	currentReloadBulletTime = 0.0f;
+	maxBulletReloadTime = .25f;
+
 }
 
 //
-void Player::SetSpriteID(unsigned int spriteID){
-	this->spriteID = spriteID;
+void Player::SetSpriteID(unsigned int a_spriteID){
+	spriteID = a_spriteID;
 }
 
 unsigned int Player::GetSpriteID(){
@@ -70,6 +74,10 @@ void Player::SetMovementKeys(unsigned int a_moveLeft, unsigned int a_moveRight){
 	moveRightKey = a_moveRight;
 }
 
+void Player::SetShootKey(unsigned int a_shootKey){
+	shootKey = a_shootKey;
+}
+
 void Player::SetMovementExtremes(unsigned int a_leftExtreme, unsigned int a_rightExtreme){
 	leftExtreme = a_leftExtreme;
 	rightExtreme = a_rightExtreme;
@@ -89,6 +97,23 @@ void Player::Move(float a_deltaTime, float a_speed){
 		}
 	}
 	MoveSprite(spriteID, x, y);
+}
+
+void Player::Shoot(unsigned int a_textureID, float a_deltaTime){
+	if (IsKeyDown(shootKey) && currentReloadBulletTime >= maxBulletReloadTime){
+		GetInactiveBullet().InitializeBullet(x, y, 0, 300, a_textureID);
+		currentReloadBulletTime = 0.0f;
+	}
+	currentReloadBulletTime += a_deltaTime;
+}
+
+Bullet& Player::GetInactiveBullet(){
+	for (int i = 0; i < MAX_BULLETS; i++){
+		if (!bullets[i].isActive){
+			return bullets[i];
+		}
+	}
+	return bullets[0];
 }
 
 Player::~Player()

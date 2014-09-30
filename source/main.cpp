@@ -9,7 +9,7 @@
 const int TOTAL_ALIENS = 18;
 const float PLAYER_WIDTH = 64.0f;
 const float PLAYER_HEIGHT = 32.0f;
-float enemySpeed = 100.f;
+float enemySpeed = 500.f;
 
 //Initialize game state functions
 void UpdateMainMenu();
@@ -19,17 +19,20 @@ void CreateEnemies();
 void EnemiesLoad();
 void MoveEnemies(int a_direction, float a_deltaTime, float a_speed);
 void DrawEnemies();
+bool CheckCollision(float x1, float y1, float x2, float y2, float distance);
 
 Player player1;
 Enemy aliens[TOTAL_ALIENS];
 int enemiesDirection = 1;
 
-//Player global veriables
+//initialize sprite variables
 unsigned int arcadeMarquee;
-
-//unsigned int alienShips[18];
+unsigned int bulletTextureID;
 unsigned int playerLives1;
 unsigned int playerLives2;
+
+//Alien Count
+int activeAliens = TOTAL_ALIENS;
 
 const char* invadersFont = "./fonts/invaders.fnt";
 
@@ -63,6 +66,9 @@ int main(int argc, char* argv[])
 	player1.SetMovementKeys('A', 'D');
 	player1.SetMovementExtremes(0, SCREEN_WIDTH);
 	player1.SetSpeed(200.f);
+	player1.SetShootKey(265);
+	bulletTextureID = CreateSprite("./images/laserGreen04.png", 5, 20, true);
+
 	//Initialize font
 	AddFont(invadersFont);
 
@@ -140,14 +146,14 @@ void UpdateGameState(float a_deltaTime){
 
 	for (int i = 0; i < TOTAL_ALIENS; i++){
 		//Collision Right
-		if (aliens[i].GetX() > SCREEN_WIDTH * .9f){
+		if (aliens[i].isActive && aliens[i].GetX() > SCREEN_WIDTH * .9f){
 			aliens[i].SetX(SCREEN_WIDTH * 0.9f);
 			enemiesDirection = -1;
 			down = true;
 			break;
 		}
 		//Collision Left
-		else if (aliens[i].GetX() < SCREEN_WIDTH * .1f){
+		else if (aliens[i].isActive && aliens[i].GetX() < SCREEN_WIDTH * .1f){
 			aliens[i].SetX(SCREEN_WIDTH * 0.1f);
 			enemiesDirection = 1;
 			down = true;
@@ -163,7 +169,26 @@ void UpdateGameState(float a_deltaTime){
 
 	MoveEnemies(enemiesDirection, a_deltaTime, enemySpeed);
 	DrawEnemies();
+	
+	//Fire the weapons!
+	player1.Shoot(bulletTextureID, a_deltaTime);
+	for (int i = 0; i < MAX_BULLETS; i++){
+		player1.bullets[i].Update(a_deltaTime);
+		player1.bullets[i].Draw();
+	}
 
+	//Bullet Collision
+	for (int i = 0; i < MAX_BULLETS; i++){
+		if (player1.bullets[i].isActive){
+			for (int j = 0; j < TOTAL_ALIENS; j++){
+				if (CheckCollision(player1.bullets[i].x, player1.bullets[i].y, aliens[j].GetX(), aliens[j].GetY(), 30.0f) && aliens[j].isActive){
+					aliens[j].isActive = false;
+					player1.bullets[i].isActive= false;
+					activeAliens--;
+				}
+			}
+		}
+	}
 
 }
 
@@ -195,13 +220,15 @@ void EnemiesLoad(){
 void MoveEnemies(int a_direction, float a_deltaTime, float a_speed){
 
 	for (int i = 0; i < TOTAL_ALIENS; i++){
-		aliens[i].Move(a_deltaTime, a_direction, a_speed);
+		aliens[i].Move(a_deltaTime, a_direction, a_speed / activeAliens);
 	}
 }
 
 void DrawEnemies(){
 	for (int i = 0; i < TOTAL_ALIENS; i++){
-		aliens[i].Draw();
+		if (aliens[i].isActive){
+			aliens[i].Draw();
+		}
 	}
 }
 
@@ -221,4 +248,13 @@ void DrawUI(){
 	DrawLine(0, 100, 672, 100, SColour(255, 255, 255, 255));
 	DrawSprite(playerLives1);
 	DrawSprite(playerLives2);
+}
+
+bool CheckCollision(float x1, float y1, float x2, float y2, float distance){
+	float d = sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));
+	if (d < distance)
+		return true;
+	else
+	
+		return false;
 }

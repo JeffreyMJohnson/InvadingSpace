@@ -34,6 +34,8 @@ public:
 	void Move(float a_deltaTime, int a_direction, float a_speed);
 	void Draw();
 
+	bool isActive;
+
 	Enemy();
 	~Enemy();
 
