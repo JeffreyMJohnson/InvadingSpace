@@ -28,46 +28,6 @@ enum  DIR
 
 DIR direction = LEFT;
 
-//struct AlienShip{
-//	unsigned int spriteID;
-//	float speed = 80.f;
-//	float width = PLAYER_WIDTH;
-//	float height = PLAYER_HEIGHT;
-//	float x;
-//	float y;
-//	
-//
-//	void SetSize(float a_width, float a_height){
-//		width = a_width;
-//		height = a_height;
-//	}
-//
-//	void SetPosition(float a_x, float a_y){
-//		x = a_x;
-//		y = a_y;
-//	}
-//
-//	bool Collide(int a_Direction){
-//		if (a_Direction == LEFT)
-//		{
-//			if (x < width * .5f)
-//			{
-//				x = width * .5f;
-//				return true;
-//			}
-//		}
-//		if (a_Direction == RIGHT)
-//		{
-//			if (x > SCREEN_WIDTH - (width * .5f))
-//			{
-//				x = SCREEN_WIDTH - (width * .5f);
-//				return true;
-//			}
-//		}
-//		return false;
-//	}
-//};
-
 Player player1;
 Enemy aliens[TOTAL_ALIENS];
 

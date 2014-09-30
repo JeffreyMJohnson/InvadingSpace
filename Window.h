@@ -2,7 +2,3 @@
 
 const int SCREEN_WIDTH = 672;
 const int SCREEN_HEIGHT = 780;
-
-	
-
-
