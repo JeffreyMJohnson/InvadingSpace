@@ -37,6 +37,9 @@ public:
 	void SetSpeed(float speed);
 	float GetSpeed();
 
+	void SetScore(int a_score);
+	int GetScore();
+
 	void Shoot(unsigned int a_textureID, float a_deltaTime);
 
 	Bullet& GetInactiveBullet();
@@ -54,6 +57,7 @@ private:
 	float speed;
 	float x;
 	float y;
+	int score;
 
 	unsigned int moveLeftKey;
 	unsigned int moveRightKey;

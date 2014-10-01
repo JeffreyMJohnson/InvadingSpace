@@ -11,6 +11,14 @@ Player::Player()
 }
 
 //
+void Player::SetScore(int a_score){
+	score = a_score;
+}
+
+int Player::GetScore(){
+	return score;
+}
+
 void Player::SetSpriteID(unsigned int a_spriteID){
 	spriteID = a_spriteID;
 }

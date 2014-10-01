@@ -21,8 +21,10 @@ void MoveEnemies(int a_direction, float a_deltaTime, float a_speed);
 void DrawEnemies();
 bool CheckCollision(float x1, float y1, float x2, float y2, float distance);
 
+//Initialize objects
 Player player1;
 Enemy aliens[TOTAL_ALIENS];
+
 int enemiesDirection = 1;
 
 //initialize sprite variables
@@ -34,6 +36,7 @@ unsigned int playerLives2;
 //Alien Count
 int activeAliens = TOTAL_ALIENS;
 
+//Font
 const char* invadersFont = "./fonts/invaders.fnt";
 
 //UI variables
@@ -60,21 +63,22 @@ int main(int argc, char* argv[])
 
 	//Initialize player
 	player1.SetSize(PLAYER_WIDTH, PLAYER_HEIGHT);
-	player1.SetSpriteID(CreateSprite("./images/cannon.png", player1.GetWidth(), player1.GetHeight(), true));
+	player1.SetSpriteID(CreateSprite("./images/playerShip1_green.png", player1.GetWidth(), player1.GetHeight(), true));
 	player1.SetX(SCREEN_WIDTH * 0.5f);
 	player1.SetY(140);
 	player1.SetMovementKeys('A', 'D');
 	player1.SetMovementExtremes(0, SCREEN_WIDTH);
 	player1.SetSpeed(200.f);
 	player1.SetShootKey(265);
+	player1.SetScore(0);
 	bulletTextureID = CreateSprite("./images/laserGreen04.png", 5, 20, true);
 
 	//Initialize font
 	AddFont(invadersFont);
 
 	//Initialize UI sprites
-	playerLives1 = CreateSprite("./images/cannon.png", player1.GetWidth() * 0.5f, player1.GetHeight() * 0.5f, true);
-	playerLives2 = CreateSprite("./images/cannon.png", player1.GetWidth() * 0.5f, player1.GetHeight() * 0.5f, true);
+	playerLives1 = CreateSprite("./images/playerShip1_green.png", player1.GetWidth() * 0.5f, player1.GetHeight() * 0.5f, true);
+	playerLives2 = CreateSprite("./images/playerShip1_green.png", player1.GetWidth() * 0.5f, player1.GetHeight() * 0.5f, true);
 	arcadeMarquee = CreateSprite("./images/Space-Invaders-Marquee.png", 755, 780, true);
 
 	//Initialize sprite position
@@ -202,7 +206,7 @@ void EnemiesLoad(){
 
 		//Initialize Sprite
 		aliens[i].SetSize(player1.GetWidth(), player1.GetHeight());
-		aliens[i].SetSpriteID(CreateSprite("./images/invaders/invaders_1_00.png", player1.GetWidth(), player1.GetHeight(), true));
+		aliens[i].SetSpriteID(CreateSprite("./images/invaders/enemyBlack3.png", player1.GetWidth(), player1.GetHeight(), true));
 
 		if (enemyX > SCREEN_WIDTH * .8f){
 			enemyX = SCREEN_WIDTH * .2f;
