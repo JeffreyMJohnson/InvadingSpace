@@ -141,8 +141,8 @@ void UpdateMainMenu(){
 
 void UpdateGameState(float a_deltaTime){
 
-	player1.Move(a_deltaTime, player1.GetSpeed());
-	DrawSprite(player1.GetSpriteID());
+	player1.Update(a_deltaTime);
+	player1.Draw();
 	DrawUI();
 
 
