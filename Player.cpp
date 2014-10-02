@@ -6,7 +6,7 @@ Player::Player()
 {
 
 	currentReloadBulletTime = 0.0f;
-	maxBulletReloadTime = .25f;
+	maxBulletReloadTime = .5f;
 
 }
 
@@ -70,25 +70,9 @@ void Player::Draw(){
 	DrawSprite(spriteID);
 }
 
-//void Player::Move(float a_deltaTime, float a_speed){
-//	if (IsKeyDown(moveLeftKey)){
-//		x -= a_deltaTime * a_speed;
-//		if (x < (leftExtreme + width * .5f)){
-//			x = (leftExtreme + width * .5f);
-//		}
-//	}
-//	if (IsKeyDown(moveRightKey)){
-//		x += a_deltaTime * a_speed;
-//		if (x > rightExtreme - width * .5f){
-//			x = (rightExtreme - width * .5f);
-//		}
-//	}
-//	MoveSprite(spriteID, x, y);
-//}
-
 void Player::Shoot(unsigned int a_textureID, float a_deltaTime){
 	if (IsKeyDown(shootKey) && currentReloadBulletTime >= maxBulletReloadTime){
-		GetInactiveBullet().InitializeBullet(x, y, 0, 300, a_textureID);
+		GetInactiveBullet().InitializeBullet(x, y, 0, 350, a_textureID);
 		currentReloadBulletTime = 0.0f;
 	}
 	currentReloadBulletTime += a_deltaTime;
