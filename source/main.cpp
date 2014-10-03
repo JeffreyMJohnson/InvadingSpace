@@ -100,7 +100,8 @@ int main(int argc, char* argv[])
 		case MAIN_MENU:
 			UpdateMainMenu();
 
-
+			//why is your input handler outside your update function?  Wouldn't that be the perfect spot
+			//for it because that is behavior of the main menu?
 			if (IsKeyDown(257)){
 				eCurrentState = GAMEPLAY;
 			}
@@ -114,6 +115,7 @@ int main(int argc, char* argv[])
 		case GAMEPLAY:
 			UpdateGameState(deltaT);
 
+			//see above comments
 			if (IsKeyDown(256)){
 				eCurrentState = MAIN_MENU;
 			}
@@ -124,6 +126,7 @@ int main(int argc, char* argv[])
 		}
 	} while (!FrameworkUpdate());
 
+	//this is smart and good to get used to. Good Job!
 	DestroySprite(player1.GetSpriteID());
 	DestroySprite(playerLives1);
 	DestroySprite(playerLives2);
@@ -181,6 +184,9 @@ void UpdateGameState(float a_deltaTime){
 		player1.bullets[i].Draw();
 	}
 
+	/*
+	*No score add?
+	*/
 	//Bullet Collision
 	for (int i = 0; i < MAX_BULLETS; i++){
 		if (player1.bullets[i].isActive){
